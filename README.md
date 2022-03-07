@@ -33,6 +33,11 @@ public class Main {
     public static void main(String[] args) throws Exception{
         final ShadedClassLoader shadedClassLoader = new ShadedClassLoader(new File("/Users/ganghuanliu/.m2/repository/com/arloor/InnerModule/1.0-SNAPSHOT/InnerModule-1.0-SNAPSHOT.jar"), ClassLoader.getSystemClassLoader());
         final Class<?> aClass = shadedClassLoader.loadClass("com.arloor.inner.Cat");
+        // 获取resource
+        final InputStream a = aClass.getClassLoader().getResourceAsStream("text");
+        final byte[] bytes = a.readAllBytes();
+        System.out.println(new String(bytes));
+        // 确认classloader
         System.out.println(aClass.getClassLoader());
         final Method say = aClass.getMethod("say");
         say.invoke(aClass);
@@ -43,7 +48,8 @@ public class Main {
 输出：
 
 ```shell
-com.arloor.classloader.ShadedClassLoader@5efa40fe
+text
+com.arloor.classloader.ShadedClassLoader@1c9b0314
 cat
 ```
 
