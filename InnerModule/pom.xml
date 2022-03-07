@@ -21,18 +21,6 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <!-- '.esclazz' resources have to be excluded as they are re-generated after shading from '.class' -->
-                    <execution>
-                        <id>default-jar</id>
-                        <configuration>
-                            <includes>**/*.class</includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
@@ -62,22 +50,14 @@
                                     <mapper type="regexp" from="^(.*)\.class$$" to="\1\.classd"/>
                                 </move>
 
+                                <!--删除原始的class-->
                                 <delete dir="${tmpdir}/com"/>
-                                <delete dir="${tmpdir}/META-INF"/>
-
-                                <!--
-                                classpath resources are checked-in in 'src/main/resources' to allow IDE to resolve them
-                                without relying on this build script to run. When updating/modifying them we have to run
-                                'mvn clean package' once to ensure that they are updated.
-                                -->
-                                <mkdir dir="${project.basedir}/src/main/resources"/>
-                                <copy todir="${project.basedir}/src/main/resources">
-                                    <fileset dir="${tmpdir}" includes="**/*"/>
-                                </copy>
+                                <!--删除MANIFEST和pom相关的东西，如果是单独成包则不需要执行这个-->
+                                <!--<delete dir="${tmpdir}/META-INF"/>-->
 
                                 <zip basedir="${tmpdir}"
                                      destfile="${project.basedir}/target/${project.build.finalName}.jar"/>
-                                <delete dir="${tmpdir}"/>
+                                <!--<delete dir="${tmpdir}"/>-->
                             </target>
                         </configuration>
                     </execution>
