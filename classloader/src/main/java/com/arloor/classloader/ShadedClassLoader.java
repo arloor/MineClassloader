@@ -118,7 +118,7 @@ public class ShadedClassLoader extends URLClassLoader {
         if (name.endsWith(CLASS_EXTENSION)) {
             return CUSTOM_PREFIX + name.substring(0, name.length() - CLASS_EXTENSION.length()) + SHADED_CLASS_EXTENSION;
         } else {
-            return CUSTOM_PREFIX + name;
+            return name;
         }
     }
 }
