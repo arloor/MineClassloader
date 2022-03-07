@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>MineClassloader</artifactId>
+        <groupId>com.arloor</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>InnerModule</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <tmpdir>${project.basedir}/target/tmp</tmpdir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <!-- '.esclazz' resources have to be excluded as they are re-generated after shading from '.class' -->
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <includes>**/*.class</includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>rename-classes</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="move-and-rename" description="Move and Rename">
+                                <!-- After relocation, we still have to move those classes to ensure they can't interfere
+                                with regular classloading. Their content will be injected as resources into the bootstrap
+                                classloader -->
+
+                                <delete dir="${tmpdir}"/>
+                                <mkdir dir="${tmpdir}"/>
+
+                                <unzip dest="${tmpdir}" src="${project.basedir}/target/${project.build.finalName}.jar"/>
+
+                                <delete dir="${tmpdir}/shaded"/>
+                                <mkdir dir="${tmpdir}/shaded"/>
+
+                                <move todir="${tmpdir}/shaded">
+                                    <fileset dir="${tmpdir}" includes="**/*.class"/>
+                                    <mapper type="regexp" from="^(.*)\.class$$" to="\1\.classd"/>
+                                </move>
+
+                                <delete dir="${tmpdir}/com"/>
+<!--                                <delete dir="${tmpdir}/META-INF"/>-->
+
+                                <!--
+                                classpath resources are checked-in in 'src/main/resources' to allow IDE to resolve them
+                                without relying on this build script to run. When updating/modifying them we have to run
+                                'mvn clean package' once to ensure that they are updated.
+                                -->
+                                <mkdir dir="${project.basedir}/src/main/resources"/>
+                                <copy todir="${project.basedir}/src/main/resources">
+                                    <fileset dir="${tmpdir}" includes="**/*"/>
+                                </copy>
+
+                                <zip basedir="${tmpdir}"
+                                     destfile="${project.basedir}/target/${project.build.finalName}.jar"/>
+                                <delete dir="${tmpdir}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
