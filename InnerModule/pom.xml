@@ -61,7 +61,18 @@
                             </target>
                         </configuration>
                     </execution>
-
+                    <execution>
+                        <phase>install</phase>
+                        <configuration>
+                            <target name="move-shaded-class">
+                                <copy file="target/${project.artifactId}-${project.version}.jar"
+                                      tofile="../classloader/src/main/resources/${project.artifactId}.jar.resource"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

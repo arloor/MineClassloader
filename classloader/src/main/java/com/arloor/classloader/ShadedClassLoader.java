@@ -40,6 +40,10 @@ public class ShadedClassLoader extends URLClassLoader {
     private final Manifest manifest;
     private final URL jarUrl;
 
+    public ShadedClassLoader(ClassLoader parent) throws IOException {
+        this(ShadedJarHelper.prepareTempJar(), parent);
+    }
+
     public ShadedClassLoader(File jar, ClassLoader parent) throws IOException {
         super(new URL[]{jar.toURI().toURL()}, parent);
         this.jarUrl = jar.toURI().toURL();

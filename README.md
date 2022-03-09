@@ -12,11 +12,6 @@ InnerModule模块中的类，在package时会将`.class`重命名为`.classd`,�
 <dependencies>
     <dependency>
         <groupId>com.arloor</groupId>
-        <artifactId>InnerModule</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-        <groupId>com.arloor</groupId>
         <artifactId>classloader</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
@@ -31,16 +26,16 @@ import java.lang.reflect.Method;
 
 public class Main {
     public static void main(String[] args) throws Exception{
-        final ShadedClassLoader shadedClassLoader = new ShadedClassLoader(new File("/Users/ganghuanliu/.m2/repository/com/arloor/InnerModule/1.0-SNAPSHOT/InnerModule-1.0-SNAPSHOT.jar"), ClassLoader.getSystemClassLoader());
-        final Class<?> aClass = shadedClassLoader.loadClass("com.arloor.inner.Cat");
+        final ShadedClassLoader shadedClassLoader = new ShadedClassLoader(ClassLoader.getSystemClassLoader());
+        final Class<?> CatClass = shadedClassLoader.loadClass("com.arloor.inner.Cat");
         // 获取resource
-        final InputStream a = aClass.getClassLoader().getResourceAsStream("text");
-        final byte[] bytes = a.readAllBytes();
+        final InputStream in = CatClass.getClassLoader().getResourceAsStream("text");
+        final byte[] bytes = in.readAllBytes();
         System.out.println(new String(bytes));
         // 确认classloader
-        System.out.println(aClass.getClassLoader());
-        final Method say = aClass.getMethod("say");
-        say.invoke(aClass);
+        System.out.println(CatClass.getClassLoader());
+        final Method say = CatClass.getMethod("say");
+        say.invoke(CatClass);
     }
 }
 ```
