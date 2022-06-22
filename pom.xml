@@ -6,10 +6,11 @@
 
     <groupId>com.arloor</groupId>
     <artifactId>MineClassloader</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <modules>
-        <module>classloader</module>
+        <!--注意此处顺序，InnerModule在classloader之前，以保证InnerModule的autorun在classloader模块之前-->
         <module>InnerModule</module>
+        <module>classloader</module>
     </modules>
     <packaging>pom</packaging>
 

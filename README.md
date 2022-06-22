@@ -4,6 +4,14 @@ classloader模块是自定义的classloader
 
 InnerModule模块中的类，在package时会将`.class`重命名为`.classd`,保证默认的类加载器加载不到，具体看InnerModule模块的pom文件。
 
+工作原理：
+
+1. InnerModule在package阶段maven-jar-plugin打jar包后，autorun插件将`.class`重命名为`.classd`，然后重新生成jar包
+2. 在InnerModule的Install阶段，先执行maven-install-plugin（安装到本地仓库），然后autorun插件将`InnerModule.jar.resource`复制到classloader模块的resources下
+3. 在classloader模块的Install阶段，先执行maven-install-plugin（安装到本地仓库），然后autorun插件将`InnerModule.jar.resource`从resources删除（清理工作）
+
+
+
 测试代码：
 
 新起一个项目（在本项目中测试，会被ide干扰）
@@ -13,7 +21,7 @@ InnerModule模块中的类，在package时会将`.class`重命名为`.classd`,�
     <dependency>
         <groupId>com.arloor</groupId>
         <artifactId>classloader</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.1-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
